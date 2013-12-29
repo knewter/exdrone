@@ -13,6 +13,7 @@ defmodule Exdrone.AtCommander do
     commander_state = state.commander_state |> State.build_tick
     message = commander_state |> State.build_message
     state.sender |> UdpSender.send_packet(message)
+    commander_state = commander_state.buffer("")
     state = state.commander_state(commander_state)
     set_and_reply(state, :ok)
   end
