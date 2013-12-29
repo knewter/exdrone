@@ -1,48 +1,19 @@
-defrecord Exdrone.AtCommander,
-            buffer: "",
-            ref_data: "0",
-            pcmd_data: "0,0,0,0,0",
-            seq: 0,
-            interval: 0.2 do
+defmodule Exdrone.AtCommander do
+  use ExActor
+  alias Exdrone.AtCommander.State
+  alias Exdrone.UdpSender
 
-  def build_message(commander) do
-    IO.inspect commander.buffer
-    commander.buffer
+  defrecord ServerState, commander_state: nil, sender: nil
+
+  definit(sender) do
+    ServerState[commander_state: State.new, sender: sender]
   end
 
-  def tick(commander) do
-    commander = commander.build_command("REF", commander.ref_data)
-    commander.build_command("PCMD", commander.pcmd_data)
-  end
-
-  def ref(commander, data) do
-    commander.ref_data(data)
-  end
-
-  def pcmd(commander, data) do
-    commander.pcmd_data(data)
-  end
-
-  def config(commander, key, value) do
-    commander.build_command("CONFIG", "#{key},#{value}")
-  end
-
-  def comwdg(commander) do
-    commander.build_command("COMWDG")
-  end
-
-  def ctrl(commander, mode) do
-    commander.build_command("CTRL", "#{mode},0")
-  end
-
-  def build_command(name, args, commander) do
-    commander = commander.seq(commander.seq + 1)
-    command = "AT*#{name}=#{commander.seq},#{args}\r"
-    commander.buffer(commander.buffer <> command)
-  end
-  def build_command(name, commander) do
-    commander = commander.seq(commander.seq + 1)
-    command = "AT*#{name}=#{commander.seq}\r"
-    commander.buffer(commander.buffer <> command)
+  defcall tick, state: state do
+    commander_state = state.commander_state |> State.build_tick
+    message = commander_state |> State.build_message
+    state.sender |> UdpSender.send_packet(message)
+    state = state.commander_state(commander_state)
+    set_and_reply(state, :ok)
   end
 end

@@ -6,7 +6,7 @@ defmodule ExdroneTest do
   alias Exdrone.Connection, as: Connection
 
   setup do
-    connection = Connection[host: "192.168.1.1", port: "5556"]
+    connection = Connection[host: "192.168.1.1", port: 5556]
     {:ok, pid} = D.start_link(connection)
     {:ok, pid: pid, connection: connection}
   end
