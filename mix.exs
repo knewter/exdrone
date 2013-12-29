@@ -4,7 +4,6 @@ defmodule Exdrone.Mixfile do
   def project do
     [ app: :exdrone,
       version: "0.0.1",
-      elixir: "~> 0.11.3-dev",
       deps: deps ]
   end
 
@@ -19,6 +18,9 @@ defmodule Exdrone.Mixfile do
   # To specify particular versions, regardless of the tag, do:
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   defp deps do
-    []
+    [
+      {:mock, github: "jjh42/mock"},
+      {:exactor, github: "sasa1977/exactor"}
+    ]
   end
 end
