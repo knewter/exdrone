@@ -1,15 +1,21 @@
 defmodule Exdrone.Drone do
+  use ExActor
+  alias Exdrone.UdpSender
+  alias Exdrone.AtCommander
+  alias Exdrone.Controller
+
   defrecord State,
-    connection: nil,
+    controller: nil,
     seq: 1
 
-  use ExActor
-
   definit(connection // Exdrone.Connection[host: "192.168.1.1", port: "5556"]) do
-    State[connection: connection]
+    sender = UdpSender.start(connection)
+    {:ok, commander} = AtCommander.start(sender)
+    {:ok, controller} = Controller.start(commander)
+    State[controller: controller]
   end
 
-  defcall take_off, state: State[connection: connection] do
-    Exdrone.Controller.take_off(connection)
+  defcall take_off, state: state do
+    Controller.take_off(state.controller)
   end
 end

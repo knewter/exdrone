@@ -13,9 +13,8 @@ defmodule ExdroneTest do
 
   test "take_off defers to the controller", meta do
     with_mock C,
-                [take_off: fn(_conn) -> :ok end] do
-      D.take_off(meta[:pid])
-      assert called(C.take_off(meta[:connection]))
+                [take_off: fn(_controller) -> :called end] do
+      assert :called == D.take_off(meta[:pid])
     end
   end
 end

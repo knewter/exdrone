@@ -17,4 +17,9 @@ defmodule Exdrone.AtCommander do
     state = state.commander_state(commander_state)
     set_and_reply(state, :ok)
   end
+
+  defcall ref(data), state: state do
+    state.commander_state(state.commander_state |> State.ref(data))
+    set_and_reply(state, :ok)
+  end
 end
