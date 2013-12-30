@@ -4,6 +4,16 @@ Exdrone is a client for the [Parrot ARDrone](http://ardrone2.parrot.com/).
 
 [![YouTube Video](web/exdrone_youtube.png)](http://www.youtube.com/watch?v=f4LVJrAOq6s&feature=youtu.be)
 
+## Usage
+
+```elixir
+connection = Exdrone.Connection[host: {192,168,1,1}, port: 5556]
+alias Exdrone.Drone, as: D
+{:ok, drone} = D.start(connection)
+drone |> D.take_off
+drone |> D.land
+```
+
 ## Development
 
 To run the tests:
