@@ -35,6 +35,10 @@ defrecord Exdrone.AtCommander.State,
     state.build_command("CTRL", "#{mode},0")
   end
 
+  def ftrim(state) do
+    state.build_command("FTRIM")
+  end
+
   def build_command(name, args, state) do
     state = state.seq(state.seq + 1)
     command = "AT*#{name}=#{state.seq},#{args}\r"

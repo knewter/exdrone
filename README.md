@@ -11,6 +11,12 @@ To run the tests:
 mix test
 ```
 
+To start a udp server that will log messages sent to it to a file:
+
+```sh
+nc -4 -u -l 2389 > /tmp/udp.data
+```
+
 ## Resources
 
 If you're interested in reading other sources re: how the ARDrone communication

@@ -17,5 +17,11 @@ defmodule Exdrone.Drone do
 
   defcall take_off, state: state do
     Controller.take_off(state.controller)
+    set_and_reply(state, self)
+  end
+
+  defcall land, state: state do
+    Controller.land(state.controller)
+    set_and_reply(state, self)
   end
 end

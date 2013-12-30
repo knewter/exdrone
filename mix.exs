@@ -9,7 +9,12 @@ defmodule Exdrone.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    [mod: { Exdrone, [] }]
+    [
+      applications: [
+        :exlager
+      ],
+      mod: { Exdrone, [] }
+    ]
   end
 
   # Returns the list of dependencies in the format:
@@ -20,7 +25,8 @@ defmodule Exdrone.Mixfile do
   defp deps do
     [
       {:mock, github: "jjh42/mock"},
-      {:exactor, github: "sasa1977/exactor"}
+      {:exactor, github: "sasa1977/exactor"},
+      {:exlager, github: "khia/exlager"}
     ]
   end
 end

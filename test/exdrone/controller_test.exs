@@ -14,7 +14,15 @@ defmodule Exdrone.ControllerTest do
     end
   end
 
-  defp ref_bits(n) do
-    Controller.ref_base |> bor(1<<<n)
+  test "navigating - landing" do
+    with_mock AtCommander, [ref: fn(_commander, _bits) -> :ok end] do
+      {:ok, controller} = Controller.start(:at_commander)
+      output = controller |> Controller.land
+      assert controller == output
+      assert called AtCommander.ref(:at_commander, ref_bits)
+    end
   end
+
+  defp ref_bits, do: Controller.ref_base
+  defp ref_bits(n), do: Controller.ref_base |> bor(1<<<n)
 end

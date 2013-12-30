@@ -16,14 +16,23 @@ defmodule Exdrone.Controller do
   definit(at_commander) do
     state = State[at_commander: at_commander]
     update_ref(state)
+    calibrate(state)
     state
   end
 
   defcall take_off, state: state do
-    state.at_commander |> AtCommander.ref(nil)
     state = state.flying(true)
     state = state.emergency(false)
-    update_ref(state)
+    state = update_ref(state)
+    set_and_reply(state, self)
+  end
+
+  defcall land, state: state do
+    state = state.flying(false)
+    state = update_ref(state)
+    IO.inspect "controller state"
+    IO.inspect state
+    IO.inspect "--------------"
     set_and_reply(state, self)
   end
 
@@ -44,7 +53,11 @@ defmodule Exdrone.Controller do
     n = ref_base
     if state.flying, do: n = n |> bor(ref_fly_bit)
     if state.emergency, do: n = n |> bor(ref_emergency_bit)
-    state.at_commander |> AtCommander.ref(n)
+    state.at_commander(state.at_commander |> AtCommander.ref(n))
+  end
+
+  def calibrate(state) do
+    state.at_commander(state.at_commander |> AtCommander.ftrim)
   end
 end
 
