@@ -1,7 +1,8 @@
 # Exdrone
-## (USELESS / IN PROGRESS)
 
 Exdrone is a client for the [Parrot ARDrone](http://ardrone2.parrot.com/).
+
+[![YouTube Video](web/exdrone_youtube.png)](http://www.youtube.com/watch?v=f4LVJrAOq6s&feature=youtu.be)
 
 ## Development
 
