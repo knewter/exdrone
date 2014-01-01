@@ -56,6 +56,21 @@ defmodule Exdrone.Controller do
     state.at_commander(state.at_commander |> AtCommander.ref(n))
   end
 
+  def update_pcmd(state) do
+    flags = 0
+    if state.moving do
+      flags = 1
+      iroll = encode_float(state.roll)
+      ipitch = encode_float(state.pitch)
+      igaz = encode_float(state.gaz)
+      iyaw = encode_float(state.yaw)
+      data = "#{flags},#{iroll},#{ipitch},#{igaz},#{iyaw}"
+    else
+      data = "0,0,0,0,0"
+    end
+    state.at_commander(state.at_commander |> AtCommander.pcmd(data))
+  end
+
   def calibrate(state) do
     state.at_commander(state.at_commander |> AtCommander.ftrim)
   end

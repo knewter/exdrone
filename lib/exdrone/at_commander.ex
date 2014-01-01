@@ -24,6 +24,11 @@ defmodule Exdrone.AtCommander do
     set_and_reply(state, self)
   end
 
+  defcall pcmd(data), state: state do
+    state = state.commander_state(state.commander_state |> State.pcmd(data))
+    set_and_reply(state, self)
+  end
+
   defcall ftrim, state: state do
     state = state.commander_state(state.commander_state |> State.ftrim)
     set_and_reply(state, self)
