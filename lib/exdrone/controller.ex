@@ -1,7 +1,12 @@
 defmodule Exdrone.Controller do
   alias Exdrone.AtCommander
-  use ExActor
+  use ExActor.GenServer
   use Bitwise
+
+  @flags [
+    hover: 0b00000000000000000000000000000000,
+    move:  0b00000000000000000000000000000001,
+  ]
 
   defrecord State,
     at_commander: nil,
@@ -17,7 +22,7 @@ defmodule Exdrone.Controller do
     state = State[at_commander: at_commander]
     update_ref(state)
     calibrate(state)
-    state
+    initial_state(state)
   end
 
   defcall take_off, state: state do
@@ -30,15 +35,25 @@ defmodule Exdrone.Controller do
   defcall land, state: state do
     state = state.flying(false)
     state = update_ref(state)
-    IO.inspect "controller state"
-    IO.inspect state
-    IO.inspect "--------------"
     set_and_reply(state, self)
   end
 
   defcall forward(amount), state: state do
     state = state.moving(true)
     state = state.pitch(-1 * amount)
+    state = update_pcmd(state)
+    set_and_reply(state, self)
+  end
+
+  defcall right(amount), state: state do
+    state = state.moving(true)
+    state = state.yaw(-1 * amount)
+    state = update_pcmd(state)
+    set_and_reply(state, self)
+  end
+
+  defcall hover, state: state do
+    state = state.moving(false)
     state = update_pcmd(state)
     set_and_reply(state, self)
   end
@@ -64,17 +79,16 @@ defmodule Exdrone.Controller do
   end
 
   def update_pcmd(state) do
-    flags = 0
     case state.moving do
       true ->
-        flags = 1
-        iflags = float_to_32int(flags)
+        flags = @flags[:move]
         iroll  = float_to_32int(state.roll)
         ipitch = float_to_32int(state.pitch)
         igaz   = float_to_32int(state.gaz)
         iyaw   = float_to_32int(state.yaw)
-        data = "#{iflags},#{iroll},#{ipitch},#{igaz},#{iyaw}"
+        data = "#{flags},#{iroll},#{ipitch},#{igaz},#{iyaw}"
       false ->
+        flags = @flags[:hover]
         data = "0,0,0,0,0"
     end
     state.at_commander(state.at_commander |> AtCommander.pcmd(data))

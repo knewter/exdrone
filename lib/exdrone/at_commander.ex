@@ -1,5 +1,5 @@
 defmodule Exdrone.AtCommander do
-  use ExActor
+  use ExActor.GenServer
   alias Exdrone.AtCommander.State
   alias Exdrone.UdpSender
 
@@ -7,7 +7,7 @@ defmodule Exdrone.AtCommander do
 
   definit(sender) do
     {:ok, timer} = :timer.apply_interval(30, Exdrone.AtCommander, :tick, [self])
-    ServerState[commander_state: State.new, sender: sender, timer: timer]
+    initial_state(ServerState[commander_state: State.new, sender: sender, timer: timer])
   end
 
   defcall tick, state: state do

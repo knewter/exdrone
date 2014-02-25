@@ -1,5 +1,5 @@
 defmodule Exdrone.Drone do
-  use ExActor
+  use ExActor.GenServer
   alias Exdrone.UdpSender
   alias Exdrone.AtCommander
   alias Exdrone.Controller
@@ -12,7 +12,7 @@ defmodule Exdrone.Drone do
     sender = UdpSender.start(connection)
     {:ok, commander} = AtCommander.start(sender)
     {:ok, controller} = Controller.start(commander)
-    State[controller: controller]
+    initial_state(State[controller: controller])
   end
 
   defcall take_off, state: state do
@@ -27,6 +27,16 @@ defmodule Exdrone.Drone do
 
   defcall forward(amount), state: state do
     Controller.forward(state.controller, amount)
+    set_and_reply(state, self)
+  end
+
+  defcall right(amount), state: state do
+    Controller.right(state.controller, amount)
+    set_and_reply(state, self)
+  end
+
+  defcall hover, state: state do
+    Controller.hover(state.controller)
     set_and_reply(state, self)
   end
 end
