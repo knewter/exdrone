@@ -8,10 +8,11 @@ defmodule Exdrone.Drone do
     controller: nil,
     seq: 1
 
-  definit(connection // Exdrone.Connection[host: "192.168.1.1", port: "5556"]) do
-    sender = UdpSender.start(connection)
-    {:ok, commander} = AtCommander.start(sender)
+  definit(connection // Exdrone.Connection[host: {192,168,1,1}, port: "5556"]) do
+    sender            = UdpSender.start(connection)
+    {:ok, commander}  = AtCommander.start(sender)
     {:ok, controller} = Controller.start(commander)
+
     initial_state(State[controller: controller])
   end
 
