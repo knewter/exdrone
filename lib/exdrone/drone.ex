@@ -24,4 +24,9 @@ defmodule Exdrone.Drone do
     Controller.land(state.controller)
     set_and_reply(state, self)
   end
+
+  defcall forward(amount), state: state do
+    Controller.forward(state.controller, amount)
+    set_and_reply(state, self)
+  end
 end

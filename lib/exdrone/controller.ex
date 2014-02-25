@@ -36,6 +36,13 @@ defmodule Exdrone.Controller do
     set_and_reply(state, self)
   end
 
+  defcall forward(amount), state: state do
+    state = state.moving(true)
+    state = state.pitch(-1 * amount)
+    state = update_pcmd(state)
+    set_and_reply(state, self)
+  end
+
   def ref_base do
     # From: https://www.robotappstore.com/Knowledge-Base/How-to-Make-ARDrone-Take-Off-or-Land/97.html
     # turn on bits (0 indexed): 18, 20, 22, 24, 28
@@ -56,8 +63,30 @@ defmodule Exdrone.Controller do
     state.at_commander(state.at_commander |> AtCommander.ref(n))
   end
 
+  def update_pcmd(state) do
+    flags = 0
+    case state.moving do
+      true ->
+        flags = 1
+        iflags = float_to_32int(flags)
+        iroll  = float_to_32int(state.roll)
+        ipitch = float_to_32int(state.pitch)
+        igaz   = float_to_32int(state.gaz)
+        iyaw   = float_to_32int(state.yaw)
+        data = "#{iflags},#{iroll},#{ipitch},#{igaz},#{iyaw}"
+      false ->
+        data = "0,0,0,0,0"
+    end
+    state.at_commander(state.at_commander |> AtCommander.pcmd(data))
+  end
+
   def calibrate(state) do
     state.at_commander(state.at_commander |> AtCommander.ftrim)
   end
-end
 
+  defp float_to_32int(float_value) do
+    <<int_value :: [size(32), signed] >> = <<float_value ::[float, size(32)]>>
+
+    int_value
+  end
+end
