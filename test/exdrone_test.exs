@@ -12,15 +12,13 @@ defmodule ExdroneTest do
   end
 
   test "take_off defers to the controller", meta do
-    with_mock C,
-                [take_off: fn(_controller) -> :called end] do
+    with_mock C, [take_off: fn(_controller) -> :called end] do
       assert :called == D.take_off(meta[:pid])
     end
   end
 
   test "land defers to the controller", meta do
-    with_mock C,
-                [land: fn(_controller) -> :called end] do
+    with_mock C, [land: fn(_controller) -> :called end] do
       assert :called == D.land(meta[:pid])
     end
   end

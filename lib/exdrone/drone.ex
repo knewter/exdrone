@@ -8,7 +8,7 @@ defmodule Exdrone.Drone do
     controller: nil,
     seq: 1
 
-  definit(connection // Exdrone.Connection[host: {192,168,1,1}, port: "5556"]) do
+  definit(connection \\ Exdrone.Connection[host: {192,168,1,1}, port: "5556"]) do
     sender            = UdpSender.start(connection)
     {:ok, commander}  = AtCommander.start(sender)
     {:ok, controller} = Controller.start(commander)
@@ -17,27 +17,22 @@ defmodule Exdrone.Drone do
   end
 
   defcall take_off, state: state do
-    Controller.take_off(state.controller)
-    set_and_reply(state, self)
+    set_and_reply(state, Controller.take_off(state.controller))
   end
 
   defcall land, state: state do
-    Controller.land(state.controller)
-    set_and_reply(state, self)
+    set_and_reply(state, Controller.land(state.controller))
   end
 
   defcall forward(amount), state: state do
-    Controller.forward(state.controller, amount)
-    set_and_reply(state, self)
+    set_and_reply(state, Controller.forward(state.controller, amount))
   end
 
   defcall right(amount), state: state do
-    Controller.right(state.controller, amount)
-    set_and_reply(state, self)
+    set_and_reply(state, Controller.right(state.controller, amount))
   end
 
   defcall hover, state: state do
-    Controller.hover(state.controller)
-    set_and_reply(state, self)
+    set_and_reply(state, Controller.hover(state.controller))
   end
 end

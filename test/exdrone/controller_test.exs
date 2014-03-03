@@ -6,7 +6,7 @@ defmodule Exdrone.ControllerTest do
   use Bitwise
 
   test "navigating - taking off" do
-    with_mock AtCommander, [ref: fn(_commander, _bits) -> :ok end] do
+    with_mock AtCommander, commander_mocks do
       {:ok, controller} = Controller.start(:at_commander)
       output = controller |> Controller.take_off
       assert controller == output
@@ -15,7 +15,7 @@ defmodule Exdrone.ControllerTest do
   end
 
   test "navigating - landing" do
-    with_mock AtCommander, [ref: fn(_commander, _bits) -> :ok end] do
+    with_mock AtCommander, commander_mocks do
       {:ok, controller} = Controller.start(:at_commander)
       output = controller |> Controller.land
       assert controller == output
@@ -25,4 +25,10 @@ defmodule Exdrone.ControllerTest do
 
   defp ref_bits, do: Controller.ref_base
   defp ref_bits(n), do: Controller.ref_base |> bor(1<<<n)
+  defp commander_mocks do
+    [
+      ref: fn(_commander, _bits) -> :ok end,
+      ftrim: fn(commander) -> commander end
+    ]
+  end
 end
