@@ -1,7 +1,9 @@
-defrecord Exdrone.UdpSender, [:connection, :socket] do
+defmodule Exdrone.UdpSender do
+  defstruct [:connection, :socket]
+
   def start(connection) do
     {:ok, socket} = :gen_udp.open(0, [:binary])
-    Exdrone.UdpSender.new(connection: connection, socket: socket)
+    %__MODULE__{connection: connection, socket: socket}
   end
 
   def send_packet(udp_sender, packet) do

@@ -8,52 +8,50 @@ defmodule Exdrone.Controller do
     move:  0b00000000000000000000000000000001,
   ]
 
-  defrecord State,
-    at_commander: nil,
-    flying: false,
-    emergency: false,
-    moving: false,
-    roll: 0,
-    pitch: 0,
-    yaw: 0,
-    gaz: 0
+  defmodule State do
+    defstruct at_commander: nil,
+              flying: false,
+              emergency: false,
+              moving: false,
+              roll: 0,
+              pitch: 0,
+              yaw: 0,
+              gaz: 0
+  end
 
   definit(at_commander) do
-    state = State[at_commander: at_commander]
+    state = %State{at_commander: at_commander}
     update_ref(state)
     calibrate(state)
     initial_state(state)
   end
 
   defcall take_off, state: state do
-    state = state.flying(true)
-    state = state.emergency(false)
+    state = %State{state | flying: true, emergency: false}
     state = update_ref(state)
     set_and_reply(state, self)
   end
 
   defcall land, state: state do
-    state = state.flying(false)
+    state = %State{state | flying: false}
     state = update_ref(state)
     set_and_reply(state, self)
   end
 
   defcall forward(amount), state: state do
-    state = state.moving(true)
-    state = state.pitch(-1 * amount)
+    state = %State{state | moving: true, pitch: -1 * amount}
     state = update_pcmd(state)
     set_and_reply(state, self)
   end
 
   defcall right(amount), state: state do
-    state = state.moving(true)
-    state = state.yaw(-1 * amount)
+    state = %State{state | moving: true, yaw: -1 * amount}
     state = update_pcmd(state)
     set_and_reply(state, self)
   end
 
   defcall hover, state: state do
-    state = state.moving(false)
+    state = %State{state | moving: false}
     state = update_pcmd(state)
     set_and_reply(state, self)
   end
@@ -75,7 +73,7 @@ defmodule Exdrone.Controller do
     n = ref_base
     if state.flying, do: n = n |> bor(ref_fly_bit)
     if state.emergency, do: n = n |> bor(ref_emergency_bit)
-    state.at_commander(state.at_commander |> AtCommander.ref(n))
+    %State{state | at_commander: state.at_commander |> AtCommander.ref(n)}
   end
 
   def update_pcmd(state) do
@@ -91,11 +89,11 @@ defmodule Exdrone.Controller do
         flags = @flags[:hover]
         data = "0,0,0,0,0"
     end
-    state.at_commander(state.at_commander |> AtCommander.pcmd(data))
+    %State{state | at_commander: state.at_commander |> AtCommander.pcmd(data)}
   end
 
   def calibrate(state) do
-    state.at_commander(state.at_commander |> AtCommander.ftrim)
+    %State{state | at_commander: state.at_commander |> AtCommander.ftrim}
   end
 
   defp float_to_32int(float_value) do

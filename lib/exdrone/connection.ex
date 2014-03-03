@@ -1,3 +1,3 @@
-defrecord Exdrone.Connection,
-  host: nil,
-  port: nil
+defmodule Exdrone.Connection do
+  defstruct [:host, :port]
+end

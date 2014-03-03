@@ -4,16 +4,16 @@ defmodule Exdrone.Drone do
   alias Exdrone.AtCommander
   alias Exdrone.Controller
 
-  defrecord State,
-    controller: nil,
-    seq: 1
+  defmodule State do
+    defstruct controller: nil, seq: 1
+  end
 
-  definit(connection \\ Exdrone.Connection[host: {192,168,1,1}, port: "5556"]) do
+  definit(connection \\ %Exdrone.Connection{host: {192,168,1,1}, port: "5556"}) do
     sender            = UdpSender.start(connection)
     {:ok, commander}  = AtCommander.start(sender)
     {:ok, controller} = Controller.start(commander)
 
-    initial_state(State[controller: controller])
+    initial_state(%State{controller: controller})
   end
 
   defcall take_off, state: state do

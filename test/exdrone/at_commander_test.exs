@@ -9,7 +9,7 @@ defmodule AtCommanderTest do
   test "tick - with no commands" do
     expected_message = ref_command(1) <> pcmd_command(2)
     unexpected_message = ref_command(3) <> pcmd_command(4)
-    connection = Connection[host: {192,168,1,1}, port: 5550]
+    connection = %Connection{host: {192,168,1,1}, port: 5550}
     sender = UdpSender.start(connection)
     {:ok, commander} = C.start(sender)
     with_mock UdpSender, [send_packet: fn(_, _) -> :ok end] do
