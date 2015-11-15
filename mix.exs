@@ -11,7 +11,6 @@ defmodule Exdrone.Mixfile do
   def application do
     [
       applications: [
-        :exlager
       ],
       mod: { Exdrone, [] }
     ]
@@ -24,9 +23,7 @@ defmodule Exdrone.Mixfile do
   # { :barbat, "~> 0.1", github: "elixir-lang/barbat" }
   defp deps do
     [
-      {:mock, github: "knewter/mock", branch: "v0.13"},
-      {:exactor, github: "sasa1977/exactor"},
-      {:exlager, github: "khia/exlager"}
+      {:mock, github: "jjh42/mock"}
     ]
   end
 end

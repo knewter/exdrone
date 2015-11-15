@@ -1,5 +1,6 @@
-%{"exactor": {:git, "git://github.com/sasa1977/exactor.git", "4581a21deafc5eaab7a9551c44facc8c8db25a97", []},
-  "exlager": {:git, "git://github.com/khia/exlager.git", "d3d73b2a3d0f7b8f3da11a02b5f9384da6c62110", []},
+%{"exactor": {:git, "git://github.com/sasa1977/exactor.git", "f14390f3d11fc70025a0c986a75585480f2daacd", []},
+  "exlager": {:git, "git://github.com/khia/exlager.git", "dca404300b04d2ad8f42e9ecc6f4c757e169071f", []},
   "goldrush": {:git, "git://github.com/DeadZen/goldrush.git", "71e63212f12c25827e0c1b4198d37d5d018a7fec", [tag: "0.1.6"]},
-  "lager": {:git, "https://github.com/basho/lager.git", "4d8291edb72a25ac0efde907e2ecaa115108ff90", []},
-  "mock": {:git, "git://github.com/knewter/mock.git", "2304f3c14d986edff74df51f77b6013906eeb1d2", [branch: "v0.13"]}}
+  "lager": {:git, "https://github.com/basho/lager.git", "d33ccf3b69de09a628fe38b4d7981bb8671b8a4f", []},
+  "meck": {:hex, :meck, "0.8.3"},
+  "mock": {:git, "https://github.com/jjh42/mock.git", "51595dbfc340058cdb385e38f199a7dc6d19d133", []}}

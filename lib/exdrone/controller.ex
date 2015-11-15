@@ -1,6 +1,7 @@
 defmodule Exdrone.Controller do
   alias Exdrone.AtCommander
-  use ExActor.GenServer
+
+  use GenServer
   use Bitwise
 
   @flags [
@@ -19,41 +20,65 @@ defmodule Exdrone.Controller do
               gaz: 0
   end
 
-  definit(at_commander) do
+  def start(at_commander) do
+    GenServer.start(__MODULE__, at_commander)
+  end
+
+  def init(at_commander) do
     state = %State{at_commander: at_commander}
     update_ref(state)
     calibrate(state)
-    initial_state(state)
+    {:ok, state}
   end
 
-  defcall take_off, state: state do
+  def take_off(pid) do
+    GenServer.call(pid, :take_off)
+  end
+
+  def land(pid) do
+    GenServer.call(pid, :land)
+  end
+
+  def forward(pid, amount) do
+    GenServer.call(pid, {:forward, amount})
+  end
+
+  def right(pid, amount) do
+    GenServer.call(pid, {:right, amount})
+  end
+
+  def hover(pid) do
+    GenServer.call(pid, :hover)
+  end
+
+  def handle_call(:take_off, _from, state) do
     state = %State{state | flying: true, emergency: false}
     state = update_ref(state)
-    set_and_reply(state, self)
+    {:reply, self, state}
   end
 
-  defcall land, state: state do
+  def handle_call(:land, _from, state) do
     state = %State{state | flying: false}
     state = update_ref(state)
-    set_and_reply(state, self)
+    {:reply, self, state}
   end
 
-  defcall forward(amount), state: state do
+  def handle_call({:forward, amount}, _from, state) do
     state = %State{state | moving: true, pitch: -1 * amount}
     state = update_pcmd(state)
-    set_and_reply(state, self)
+    {:reply, self, state}
   end
 
-  defcall right(amount), state: state do
+  def handle_call({:right, amount}, _from, state) do
     state = %State{state | moving: true, yaw: -1 * amount}
     state = update_pcmd(state)
-    set_and_reply(state, self)
+    {:reply, self, state}
   end
 
-  defcall hover, state: state do
+  def handle_call(:hover, _from, state) do
     state = %State{state | moving: false}
     state = update_pcmd(state)
-    set_and_reply(state, self)
+    {:reply, self, state}
   end
 
   def ref_base do
@@ -73,7 +98,8 @@ defmodule Exdrone.Controller do
     n = ref_base
     if state.flying, do: n = n |> bor(ref_fly_bit)
     if state.emergency, do: n = n |> bor(ref_emergency_bit)
-    %State{state | at_commander: state.at_commander |> AtCommander.ref(n)}
+    at_commander = AtCommander.ref(state.at_commander, n)
+    %State{state | at_commander: at_commander}
   end
 
   def update_pcmd(state) do
@@ -97,7 +123,7 @@ defmodule Exdrone.Controller do
   end
 
   defp float_to_32int(float_value) do
-    <<int_value :: [size(32), signed] >> = <<float_value ::[float, size(32)]>>
+    <<int_value :: size(32)-signed >> = <<float_value :: size(32)-float >>
 
     int_value
   end
