@@ -22,7 +22,7 @@ defmodule Exdrone.AtCommander do
   end
 
   def ref(pid, data) do
-    GenSever.call(pid, {:ref, data})
+    GenServer.call(pid, {:ref, data})
   end
 
   def ftrim(pid) do
