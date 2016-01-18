@@ -1,5 +1,5 @@
 defmodule Exdrone.Supervisor do
-  use Supervisor.Behaviour
+  use Supervisor
 
   def start_link do
     :supervisor.start_link(__MODULE__, [])
